@@ -17,6 +17,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var viewBinding: ActivityMainBinding
 
+    private val tileOverlayMap = HashMap<String, GroundOverlay>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewBinding = ActivityMainBinding.inflate(layoutInflater)
@@ -67,7 +69,8 @@ class MainActivity : AppCompatActivity() {
             overlayOptions.image(BitmapDescriptorFactory.fromBitmap(bitmap))
             overlayOptions.transparency(0.6f)
 
-            googleMap.addGroundOverlay(overlayOptions)
+            val overlay = googleMap.addGroundOverlay(overlayOptions)
+            tileOverlayMap[getLayerId(tile)] = overlay
         }
     }
 
