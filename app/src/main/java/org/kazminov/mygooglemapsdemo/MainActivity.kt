@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity() {
 
             // TODO: can be replaced with assets path
             overlayOptions.image(BitmapDescriptorFactory.fromBitmap(bitmap))
-            overlayOptions.transparency(0.6f)
+            overlayOptions.transparency(0.4f)
 
             val overlay = googleMap.addGroundOverlay(overlayOptions)
             tileOverlayMap[getLayerId(tile)] = overlay
