@@ -2,9 +2,16 @@ package org.kazminov.mygooglemapsdemo
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import androidx.appcompat.app.AppCompatActivity
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
@@ -12,6 +19,7 @@ import com.google.android.gms.maps.model.*
 import org.kazminov.mygooglemapsdemo.databinding.ActivityMainBinding
 import yo.radar.Tile
 import yo.radar.util.TileUtil
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -42,12 +50,51 @@ class MainActivity : AppCompatActivity() {
 
         // tampere - 61.497753, 23.760954
         // spb - 59.934280   30.335099
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(59.934280, 30.335099), START_ZOOM.toFloat()))
+        googleMap.moveCamera(
+            CameraUpdateFactory.newLatLngZoom(
+                LatLng(59.934280, 30.335099),
+                START_ZOOM.toFloat()
+            )
+        )
         googleMap.uiSettings.isCompassEnabled = true
         googleMap.uiSettings.isZoomControlsEnabled = true
 
 //        loadFromAssets(googleMap)
+        addTextMarker(googleMap)
     }
+
+    private fun addTextMarker(googleMap: GoogleMap) {
+
+        val markerBitmap = drawableToBitmap(ContextCompat.getDrawable(this, R.drawable.ic_baseline_location_on_24)!!) ?: return
+
+        val iconDescriptor = BitmapDescriptorFactory.fromBitmap(markerBitmap)
+
+        val markerOptions = MarkerOptions()
+        markerOptions.icon(iconDescriptor)
+        markerOptions.title("Some title")
+        markerOptions.alpha(1f)
+        markerOptions.position(LatLng(59.934280, 30.335099))
+
+        val marker = googleMap.addMarker(markerOptions)
+
+//        BubleIcon
+    }
+
+    fun drawableToBitmap(drawable: Drawable): Bitmap? {
+        if (drawable is BitmapDrawable) {
+            return drawable.bitmap
+        }
+        var width = drawable.intrinsicWidth
+        width = if (width > 0) width else 1
+        var height = drawable.intrinsicHeight
+        height = if (height > 0) height else 1
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        drawable.setBounds(0, 0, canvas.width, canvas.height)
+        drawable.draw(canvas)
+        return bitmap
+    }
+
 
     private fun loadFromAssets(googleMap: GoogleMap) {
         val tiles = arrayListOf<Tile>(
