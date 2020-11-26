@@ -40,12 +40,13 @@ class MainActivity : AppCompatActivity() {
     private fun onMapReady(googleMap: GoogleMap) {
         viewBinding.progress.visibility = View.GONE
 
-        // 61.497753, 23.760954
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(61.497753, 23.760954), START_ZOOM.toFloat()))
+        // tampere - 61.497753, 23.760954
+        // spb - 59.934280   30.335099
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(59.934280, 30.335099), START_ZOOM.toFloat()))
         googleMap.uiSettings.isCompassEnabled = true
         googleMap.uiSettings.isZoomControlsEnabled = true
 
-        loadFromAssets(googleMap)
+//        loadFromAssets(googleMap)
     }
 
     private fun loadFromAssets(googleMap: GoogleMap) {
@@ -99,6 +100,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val START_ZOOM = 6
+        const val START_ZOOM = 8
     }
 }
