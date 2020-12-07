@@ -1,17 +1,13 @@
 package org.kazminov.mygooglemapsdemo
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.Color
+import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
@@ -65,9 +61,71 @@ class MainActivity : AppCompatActivity() {
 
     private fun addTextMarker(googleMap: GoogleMap) {
 
-        val markerBitmap = drawableToBitmap(ContextCompat.getDrawable(this, R.drawable.ic_baseline_location_on_24)!!) ?: return
+//        val markerBitmap = drawableToBitmap(ContextCompat.getDrawable(this, R.drawable.ic_baseline_location_on_s24)!!) ?: return
 
-        val iconDescriptor = BitmapDescriptorFactory.fromBitmap(markerBitmap)
+//        val iconDescriptor = BitmapDescriptorFactory.fromBitmap(markerBitmap)
+
+        val view = layoutInflater.inflate(R.layout.marker_alyout, viewBinding.root, false)
+
+//        val iconGenerator = IconGenerator(this)
+//        iconGenerator.setContentView(view)
+//        iconGenerator.setBackground(null)
+//        iconGenerator.s
+//        val iconDescriptor = BitmapDescriptorFactory.fromBitmap(iconGenerator.makeIcon())s
+
+        val drawable = ContextCompat.getDrawable(this, R.drawable.ic_baseline_location_on_24) ?: return
+//        bitmap.eraseColor(Color.WHITE)
+//
+        val text = "Title"
+//        val bounds = Rect()
+
+        val textPaint = Paint(Paint.ANTI_ALIAS_FLAG);
+        textPaint.textAlign = Paint.Align.LEFT
+        textPaint.textSize = 40f
+        textPaint.style = Paint.Style.STROKE
+        textPaint.color = Color.WHITE;
+        textPaint.strokeWidth = 4f
+
+//        textPaint.getTextBounds(text, 0, text.length, bounds)
+        val baseline: Float = -textPaint.ascent() // ascent() is negative
+        val width = (textPaint.measureText(text) + 0.5f)// round
+        val height = (baseline + textPaint.descent() + 0.5f)
+
+        val textBitmap = Bitmap.createBitmap(
+            width.toInt(),
+            height.toInt(),
+            Bitmap.Config.ARGB_8888
+        )
+//        textBitmap.eraseColor(Color.BLUE)
+        val canvas = Canvas(textBitmap)
+        canvas.drawText(text, 0f, baseline, textPaint)
+
+        textPaint.style = Paint.Style.FILL
+        textPaint.color = 0xff494949.toInt();
+        textPaint.strokeWidth = 0f
+
+//        textPaint.getTextBounds(text, 0, text.length, bounds)
+        canvas.drawText(text, 0f, baseline, textPaint)
+
+        val margin = 0f
+        val iconBitmap = drawableToBitmap(drawable) ?: return
+
+        val markerWidth = iconBitmap.width.coerceAtLeast(textBitmap.width)
+        val markerHeight = iconBitmap.height.plus(textBitmap.height).plus(margin).toInt()
+        val bitmap = Bitmap.createBitmap(markerWidth, markerHeight, Bitmap.Config.ARGB_8888)
+//        bitmap.eraseColor(Color.RED)
+
+        canvas.setBitmap(bitmap)
+        canvas.drawBitmap(textBitmap, 0f, 0f, null)
+        canvas.drawBitmap(
+            iconBitmap,
+            bitmap.width.div(2).minus(iconBitmap.width.div(2)).toFloat(),
+            textBitmap.height.plus(margin),
+            null
+        )
+
+//        val iconDescriptor = BitmapDescriptorFactory.fromBitmap(textBitmap)
+        val iconDescriptor = BitmapDescriptorFactory.fromBitmap(bitmap)
 
         val markerOptions = MarkerOptions()
         markerOptions.icon(iconDescriptor)
@@ -88,7 +146,10 @@ class MainActivity : AppCompatActivity() {
         width = if (width > 0) width else 1
         var height = drawable.intrinsicHeight
         height = if (height > 0) height else 1
+
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+//        bitmap.eraseColor(Color.GREEN)
+
         val canvas = Canvas(bitmap)
         drawable.setBounds(0, 0, canvas.width, canvas.height)
         drawable.draw(canvas)
