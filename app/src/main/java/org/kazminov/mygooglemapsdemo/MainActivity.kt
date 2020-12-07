@@ -77,59 +77,16 @@ class MainActivity : AppCompatActivity() {
 //        bitmap.eraseColor(Color.WHITE)
 //
         val text = "Title"
-//        val bounds = Rect()
 
-        val textPaint = Paint(Paint.ANTI_ALIAS_FLAG);
-        textPaint.textAlign = Paint.Align.LEFT
-        textPaint.textSize = 40f
-        textPaint.style = Paint.Style.STROKE
-        textPaint.color = Color.WHITE;
-        textPaint.strokeWidth = 4f
+        val bitmapGenerator = MarkerBitmapGenerator(drawable)
+        bitmapGenerator.text = text
+        bitmapGenerator.bottomIcon = drawable
+        val bitmap = bitmapGenerator.create()
 
-//        textPaint.getTextBounds(text, 0, text.length, bounds)
-        val baseline: Float = -textPaint.ascent() // ascent() is negative
-        val width = (textPaint.measureText(text) + 0.5f)// round
-        val height = (baseline + textPaint.descent() + 0.5f)
-
-        val textBitmap = Bitmap.createBitmap(
-            width.toInt(),
-            height.toInt(),
-            Bitmap.Config.ARGB_8888
-        )
-//        textBitmap.eraseColor(Color.BLUE)
-        val canvas = Canvas(textBitmap)
-        canvas.drawText(text, 0f, baseline, textPaint)
-
-        textPaint.style = Paint.Style.FILL
-        textPaint.color = 0xff494949.toInt();
-        textPaint.strokeWidth = 0f
-
-//        textPaint.getTextBounds(text, 0, text.length, bounds)
-        canvas.drawText(text, 0f, baseline, textPaint)
-
-        val margin = 0f
-        val iconBitmap = drawableToBitmap(drawable) ?: return
-
-        val markerWidth = iconBitmap.width.coerceAtLeast(textBitmap.width)
-        val markerHeight = iconBitmap.height.plus(textBitmap.height).plus(margin).toInt()
-        val bitmap = Bitmap.createBitmap(markerWidth, markerHeight, Bitmap.Config.ARGB_8888)
-//        bitmap.eraseColor(Color.RED)
-
-        canvas.setBitmap(bitmap)
-        canvas.drawBitmap(textBitmap, 0f, 0f, null)
-        canvas.drawBitmap(
-            iconBitmap,
-            bitmap.width.div(2).minus(iconBitmap.width.div(2)).toFloat(),
-            textBitmap.height.plus(margin),
-            null
-        )
-
-//        val iconDescriptor = BitmapDescriptorFactory.fromBitmap(textBitmap)
         val iconDescriptor = BitmapDescriptorFactory.fromBitmap(bitmap)
 
         val markerOptions = MarkerOptions()
         markerOptions.icon(iconDescriptor)
-        markerOptions.title("Some title")
         markerOptions.alpha(1f)
         markerOptions.position(LatLng(59.934280, 30.335099))
 
@@ -137,25 +94,6 @@ class MainActivity : AppCompatActivity() {
 
 //        BubleIcon
     }
-
-    fun drawableToBitmap(drawable: Drawable): Bitmap? {
-        if (drawable is BitmapDrawable) {
-            return drawable.bitmap
-        }
-        var width = drawable.intrinsicWidth
-        width = if (width > 0) width else 1
-        var height = drawable.intrinsicHeight
-        height = if (height > 0) height else 1
-
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-//        bitmap.eraseColor(Color.GREEN)
-
-        val canvas = Canvas(bitmap)
-        drawable.setBounds(0, 0, canvas.width, canvas.height)
-        drawable.draw(canvas)
-        return bitmap
-    }
-
 
     private fun loadFromAssets(googleMap: GoogleMap) {
         val tiles = arrayListOf<Tile>(
