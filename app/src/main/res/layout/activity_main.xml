@@ -20,4 +20,29 @@
         android:layout_height="match_parent"
         />
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="top|left"
+        >
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Clear tile cache"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            />
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Switch tile mode"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            />
+    </LinearLayout>
+
 </FrameLayout>

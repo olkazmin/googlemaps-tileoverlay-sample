@@ -4,6 +4,7 @@ import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -13,21 +14,30 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import org.kazminov.mygooglemapsdemo.databinding.ActivityMainBinding
+import org.kazminov.mymapboxdemo.RadarDrawableUtil
 import yo.radar.Tile
 import yo.radar.util.TileUtil
 
+typealias GMapTile = com.google.android.gms.maps.model.Tile
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var viewBinding: ActivityMainBinding
 
-    private val tileOverlayMap = HashMap<String, GroundOverlay>()
+    private val tileOverlayMap = HashMap<String, TileOverlay>()
+    private var showChess = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
 
+        MyApplication.instance.requestMapInitialization {
+            initMap()
+        }
+    }
+
+    private fun initMap() {
         val mapFragment = SupportMapFragment()
         supportFragmentManager
             .beginTransaction()
@@ -39,6 +49,15 @@ class MainActivity : AppCompatActivity() {
                 onMapReady(it)
             }
         }
+
+        viewBinding.button.setOnClickListener {
+            tileOverlayMap["1"]?.clearTileCache()
+        }
+
+        viewBinding.button1.setOnClickListener {
+            showChess = !showChess
+            tileOverlayMap["1"]?.clearTileCache()
+        }
     }
 
     private fun onMapReady(googleMap: GoogleMap) {
@@ -48,14 +67,15 @@ class MainActivity : AppCompatActivity() {
         // spb - 59.934280   30.335099
         googleMap.moveCamera(
             CameraUpdateFactory.newLatLngZoom(
-                LatLng(59.934280, 30.335099),
+//                LatLng(59.934280, 30.335099),
+                LatLng(61.497753, 23.760954),
                 START_ZOOM.toFloat()
             )
         )
         googleMap.uiSettings.isCompassEnabled = true
         googleMap.uiSettings.isZoomControlsEnabled = true
 
-//        loadFromAssets(googleMap)
+        loadFromAssets(googleMap)
         addTextMarker(googleMap)
     }
 
@@ -103,27 +123,62 @@ class MainActivity : AppCompatActivity() {
             Tile(36, 18, 6)
         )
 
+        val tileOverlayOptions = TileOverlayOptions()
+        tileOverlayOptions.tileProvider(tileProvider)
+        tileOverlayOptions.visible(true)
+        val overlay = googleMap.addTileOverlay(tileOverlayOptions)
+        tileOverlayMap["1"] = checkNotNull(overlay)
+
+
+
         for (tile in tiles) {
-            val layerId = getLayerId(tile)
+//            val layerId = getLayerId(tile)
+//
+//            val tileBounds = getTileBounds(tile.x, tile.y, tile.zoom)
+//            val bitmap = loadBitmapFromAssets(tile)
+//
+//            val tileOverlayOptions = TileOverlayOptions()
+//            tileOverlayOptions.tileProvider(tileProvider)
+//            tileOverlayOptions.visible(true)
+//            val overlayOptions = GroundOverlayOptions()
+//            overlayOptions.positionFromBounds(tileBounds)
+//
+//            // TODO: can be replaced with assets path
+//            overlayOptions.image(BitmapDescriptorFactory.fromBitmap(bitmap))
+//            overlayOptions.transparency(0.4f)
+//
+//            val overlay = googleMap.addGroundOverlay(overlayOptions)
+        }
+    }
 
-            val tileBounds = getTileBounds(tile.x, tile.y, tile.zoom)
-            val bitmap = loadBitmapFromAssets(tile)
+    private val tileProvider = object : TileProvider {
 
-            val overlayOptions = GroundOverlayOptions()
-            overlayOptions.positionFromBounds(tileBounds)
-
-            // TODO: can be replaced with assets path
-            overlayOptions.image(BitmapDescriptorFactory.fromBitmap(bitmap))
-            overlayOptions.transparency(0.4f)
-
-            val overlay = googleMap.addGroundOverlay(overlayOptions)
-            tileOverlayMap[getLayerId(tile)] = overlay
+        override fun getTile(x: Int, y: Int, z: Int): com.google.android.gms.maps.model.Tile? {
+            Log.v("TileProvider", "getTile: $x, $y, zoom=$z")
+            var bytes = if (showChess) {
+                RadarDrawableUtil.getDrawableAsBitmap(this@MainActivity, false)
+            } else {
+                loadBytesFromAssets(35, 17, 6)
+            }
+            val tile = GMapTile(256, 256, bytes)
+            return tile
         }
     }
 
     private fun loadBitmapFromAssets(tile: Tile): Bitmap {
         val inputStream = assets.open("${tile.x}_${tile.y}_${tile.zoom}.png")
         return BitmapFactory.decodeStream(inputStream) ?: throw Error("Bitmap null")
+    }
+
+    private fun loadBytesFromAssets(x: Int, y: Int, zoom: Int): ByteArray {
+        val inputStream = assets.open("${x}_${y}_${zoom}.png")
+        try {
+            val bytes = ByteArray(inputStream.available())
+            inputStream.read(bytes)
+            return bytes
+        } finally {
+            inputStream.close()
+        }
     }
 
     private fun getLayerId(tile: Tile): String {
