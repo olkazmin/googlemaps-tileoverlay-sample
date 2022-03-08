@@ -64,6 +64,7 @@ class MainActivity : AppCompatActivity() {
         viewBinding.button3.setOnClickListener {
             tileOverlayMap["1"]?.let { tileOverlay ->
                 tileOverlay.isVisible = tileOverlay.isVisible.not()
+                Log.v("TileProvider1", "now visible=${tileOverlay.isVisible}")
             }
         }
     }
@@ -136,13 +137,13 @@ class MainActivity : AppCompatActivity() {
         // Problems:
         // initial visibility value is ignored
         // if initially set to invisible than transparency options will also be ignored
-        tileOverlayOptions1.visible(false)
+//        tileOverlayOptions1.visible(false)
         tileOverlayOptions1.transparency(0.5f)
         tileOverlayMap["1"] = checkNotNull(googleMap.addTileOverlay(tileOverlayOptions1))
         // If we set the overlay to invisible later than provider will start
         // fetching tiles which is NOT always ok
         tileOverlayMap["1"]?.isVisible = false
-//        tileOverlayMap["1"]?.transparency = 0.5f
+        tileOverlayMap["1"]?.transparency = 0.5f
 
 
 
