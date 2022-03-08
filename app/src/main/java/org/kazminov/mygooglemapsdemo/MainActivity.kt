@@ -84,44 +84,44 @@ class MainActivity : AppCompatActivity() {
         googleMap.uiSettings.isZoomControlsEnabled = true
 
         loadFromAssets(googleMap)
-        addTextMarker(googleMap)
+//        addTextMarker(googleMap)
     }
-
-    private fun addTextMarker(googleMap: GoogleMap) {
-
-//        val markerBitmap = drawableToBitmap(ContextCompat.getDrawable(this, R.drawable.ic_baseline_location_on_s24)!!) ?: return
-
-//        val iconDescriptor = BitmapDescriptorFactory.fromBitmap(markerBitmap)
-
-        val view = layoutInflater.inflate(R.layout.marker_alyout, viewBinding.root, false)
-
-//        val iconGenerator = IconGenerator(this)
-//        iconGenerator.setContentView(view)
-//        iconGenerator.setBackground(null)
-//        iconGenerator.s
-//        val iconDescriptor = BitmapDescriptorFactory.fromBitmap(iconGenerator.makeIcon())s
-
-        val drawable = ContextCompat.getDrawable(this, R.drawable.ic_baseline_location_on_24) ?: return
-//        bitmap.eraseColor(Color.WHITE)
 //
-        val text = "Title"
-
-        val bitmapGenerator = MarkerBitmapGenerator(drawable)
-        bitmapGenerator.text = text
-        bitmapGenerator.bottomIcon = drawable
-        val bitmap = bitmapGenerator.create()
-
-        val iconDescriptor = BitmapDescriptorFactory.fromBitmap(bitmap)
-
-        val markerOptions = MarkerOptions()
-        markerOptions.icon(iconDescriptor)
-        markerOptions.alpha(1f)
-        markerOptions.position(LatLng(59.934280, 30.335099))
-
-        val marker = googleMap.addMarker(markerOptions)
-
-//        BubleIcon
-    }
+//    private fun addTextMarker(googleMap: GoogleMap) {
+//
+////        val markerBitmap = drawableToBitmap(ContextCompat.getDrawable(this, R.drawable.ic_baseline_location_on_s24)!!) ?: return
+//
+////        val iconDescriptor = BitmapDescriptorFactory.fromBitmap(markerBitmap)
+//
+//        val view = layoutInflater.inflate(R.layout.marker_alyout, viewBinding.root, false)
+//
+////        val iconGenerator = IconGenerator(this)
+////        iconGenerator.setContentView(view)
+////        iconGenerator.setBackground(null)
+////        iconGenerator.s
+////        val iconDescriptor = BitmapDescriptorFactory.fromBitmap(iconGenerator.makeIcon())s
+//
+//        val drawable = ContextCompat.getDrawable(this, R.drawable.ic_baseline_location_on_24) ?: return
+////        bitmap.eraseColor(Color.WHITE)
+////
+//        val text = "Title"
+//
+//        val bitmapGenerator = MarkerBitmapGenerator(drawable)
+//        bitmapGenerator.text = text
+//        bitmapGenerator.bottomIcon = drawable
+//        val bitmap = bitmapGenerator.create()
+//
+//        val iconDescriptor = BitmapDescriptorFactory.fromBitmap(bitmap)
+//
+//        val markerOptions = MarkerOptions()
+//        markerOptions.icon(iconDescriptor)
+//        markerOptions.alpha(1f)
+//        markerOptions.position(LatLng(59.934280, 30.335099))
+//
+//        val marker = googleMap.addMarker(markerOptions)
+//
+////        BubleIcon
+//    }
 
     private fun loadFromAssets(googleMap: GoogleMap) {
         val tiles = arrayListOf<Tile>(
