@@ -2,8 +2,8 @@ package org.kazminov.mygooglemapsdemo
 
 import android.app.Application
 import android.util.Log
+
 import com.google.android.gms.maps.MapsInitializer
-import com.google.android.gms.maps.OnMapsSdkInitializedCallback
 
 class MyApplication: Application() {
 

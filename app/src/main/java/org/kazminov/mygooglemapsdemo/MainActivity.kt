@@ -1,20 +1,19 @@
 package org.kazminov.mygooglemapsdemo
 
 import android.graphics.*
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
-import android.util.TypedValue
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import org.kazminov.mygooglemapsdemo.databinding.ActivityMainBinding
 import org.kazminov.mymapboxdemo.RadarDrawableUtil
+
 import yo.radar.Tile
 import yo.radar.util.TileUtil
 
@@ -25,7 +24,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewBinding: ActivityMainBinding
 
     private val tileOverlayMap = HashMap<String, TileOverlay>()
-    private var showChess = false
+    private val tileProviderMap = HashMap<String, MyTileProvider>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,8 +54,17 @@ class MainActivity : AppCompatActivity() {
         }
 
         viewBinding.button1.setOnClickListener {
-            showChess = !showChess
-            tileOverlayMap["1"]?.clearTileCache()
+//            showChess = !showChess
+            tileOverlayMap["1"]?.apply {
+                clearTileCache()
+                tileProvider1.showChess = !tileProvider1.showChess
+            }
+        }
+
+        viewBinding.button3.setOnClickListener {
+            tileOverlayMap["1"]?.let { tileOverlay ->
+                tileOverlay.isVisible = tileOverlay.isVisible.not()
+            }
         }
     }
 
@@ -123,12 +131,28 @@ class MainActivity : AppCompatActivity() {
             Tile(36, 18, 6)
         )
 
-        val tileOverlayOptions = TileOverlayOptions()
-        tileOverlayOptions.tileProvider(tileProvider)
-        tileOverlayOptions.visible(true)
-        val overlay = googleMap.addTileOverlay(tileOverlayOptions)
-        tileOverlayMap["1"] = checkNotNull(overlay)
+        val tileOverlayOptions1 = TileOverlayOptions()
+        tileOverlayOptions1.tileProvider(tileProvider1)
+        // Problems:
+        // initial visibility value is ignored
+        // if initially set to invisible than transparency options will also be ignored
+        tileOverlayOptions1.visible(false)
+        tileOverlayOptions1.transparency(0.5f)
+        tileOverlayMap["1"] = checkNotNull(googleMap.addTileOverlay(tileOverlayOptions1))
+        // If we set the overlay to invisible later than provider will start
+        // fetching tiles which is NOT always ok
+        tileOverlayMap["1"]?.isVisible = false
+//        tileOverlayMap["1"]?.transparency = 0.5f
 
+
+
+//        val tileOverlayOptions2 = TileOverlayOptions()
+//        tileOverlayOptions2.tileProvider(tileProvider2)
+//        tileProvider2.showChess = true
+//        tileOverlayOptions2.visible(false)
+//        tileOverlayOptions2.transparency(0.5f)
+//        tileOverlayMap["2"] = checkNotNull(googleMap.addTileOverlay(tileOverlayOptions2))
+//        tileOverlayMap["2"]?.isVisible = false
 
 
         for (tile in tiles) {
@@ -151,10 +175,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private val tileProvider = object : TileProvider {
-
+    private val tileProvider1 = object : MyTileProvider() {
         override fun getTile(x: Int, y: Int, z: Int): com.google.android.gms.maps.model.Tile? {
-            Log.v("TileProvider", "getTile: $x, $y, zoom=$z")
+            Log.v("TileProvider1", "getTile: $x, $y, zoom=$z")
             var bytes = if (showChess) {
                 RadarDrawableUtil.getDrawableAsBitmap(this@MainActivity, false)
             } else {
@@ -163,6 +186,23 @@ class MainActivity : AppCompatActivity() {
             val tile = GMapTile(256, 256, bytes)
             return tile
         }
+    }
+
+    private val tileProvider2 = object : MyTileProvider() {
+        override fun getTile(x: Int, y: Int, z: Int): com.google.android.gms.maps.model.Tile? {
+            Log.v("TileProvider2", "getTile: $x, $y, zoom=$z")
+            var bytes = if (showChess) {
+                RadarDrawableUtil.getDrawableAsBitmap(this@MainActivity, false)
+            } else {
+                loadBytesFromAssets(35, 18, 6)
+            }
+            val tile = GMapTile(256, 256, bytes)
+            return tile
+        }
+    }
+
+    private abstract class MyTileProvider : TileProvider {
+        var showChess = false
     }
 
     private fun loadBitmapFromAssets(tile: Tile): Bitmap {
