@@ -49,17 +49,16 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        viewBinding.button.setOnClickListener {
-            tileOverlayMap["1"]?.clearTileCache()
-        }
+//        viewBinding.button.setOnClickListener {
+//            tileOverlayMap["1"]?.clearTileCache()
+//        }
 
-        viewBinding.button1.setOnClickListener {
-//            showChess = !showChess
-            tileOverlayMap["1"]?.apply {
-                clearTileCache()
-                tileProvider1.showChess = !tileProvider1.showChess
-            }
-        }
+//        viewBinding.button1.setOnClickListener {
+//            tileOverlayMap["1"]?.apply {
+//                clearTileCache()
+//                tileProvider1.showChess = !tileProvider1.showChess
+//            }
+//        }
 
         viewBinding.button3.setOnClickListener {
             tileOverlayMap["1"]?.let { tileOverlay ->
@@ -86,6 +85,58 @@ class MainActivity : AppCompatActivity() {
 
         loadFromAssets(googleMap)
 //        addTextMarker(googleMap)
+    }
+
+    private fun loadFromAssets(googleMap: GoogleMap) {
+        val tiles = arrayListOf<Tile>(
+            Tile(35, 17, 6),
+            Tile(36, 17, 6),
+            Tile(35, 18, 6),
+            Tile(36, 18, 6)
+        )
+
+        val tileOverlayOptions1 = TileOverlayOptions()
+        tileOverlayOptions1.tileProvider(tileProvider1)
+        // Problems:
+        // initial visibility value is ignored
+//        tileOverlayOptions1.visible(false)
+        // if initially set to invisible than transparency option will also be ignored
+        tileOverlayOptions1.transparency(0.5f)
+        tileOverlayMap["1"] = checkNotNull(googleMap.addTileOverlay(tileOverlayOptions1))
+        // If we set the overlay to invisible later than provider will start
+        // fetching tiles which is NOT always ok
+        tileOverlayMap["1"]?.isVisible = false
+        tileOverlayMap["1"]?.transparency = 0.5f
+
+
+
+//        val tileOverlayOptions2 = TileOverlayOptions()
+//        tileOverlayOptions2.tileProvider(tileProvider2)
+//        tileProvider2.showChess = true
+//        tileOverlayOptions2.visible(false)
+//        tileOverlayOptions2.transparency(0.5f)
+//        tileOverlayMap["2"] = checkNotNull(googleMap.addTileOverlay(tileOverlayOptions2))
+//        tileOverlayMap["2"]?.isVisible = false
+
+
+        for (tile in tiles) {
+//            val layerId = getLayerId(tile)
+//
+//            val tileBounds = getTileBounds(tile.x, tile.y, tile.zoom)
+//            val bitmap = loadBitmapFromAssets(tile)
+//
+//            val tileOverlayOptions = TileOverlayOptions()
+//            tileOverlayOptions.tileProvider(tileProvider)
+//            tileOverlayOptions.visible(true)
+//            val overlayOptions = GroundOverlayOptions()
+//            overlayOptions.positionFromBounds(tileBounds)
+//
+//            // TODO: can be replaced with assets path
+//            overlayOptions.image(BitmapDescriptorFactory.fromBitmap(bitmap))
+//            overlayOptions.transparency(0.4f)
+//
+//            val overlay = googleMap.addGroundOverlay(overlayOptions)
+        }
     }
 //
 //    private fun addTextMarker(googleMap: GoogleMap) {
@@ -124,57 +175,6 @@ class MainActivity : AppCompatActivity() {
 ////        BubleIcon
 //    }
 
-    private fun loadFromAssets(googleMap: GoogleMap) {
-        val tiles = arrayListOf<Tile>(
-            Tile(35, 17, 6),
-            Tile(36, 17, 6),
-            Tile(35, 18, 6),
-            Tile(36, 18, 6)
-        )
-
-        val tileOverlayOptions1 = TileOverlayOptions()
-        tileOverlayOptions1.tileProvider(tileProvider1)
-        // Problems:
-        // initial visibility value is ignored
-        // if initially set to invisible than transparency options will also be ignored
-//        tileOverlayOptions1.visible(false)
-        tileOverlayOptions1.transparency(0.5f)
-        tileOverlayMap["1"] = checkNotNull(googleMap.addTileOverlay(tileOverlayOptions1))
-        // If we set the overlay to invisible later than provider will start
-        // fetching tiles which is NOT always ok
-        tileOverlayMap["1"]?.isVisible = false
-        tileOverlayMap["1"]?.transparency = 0.5f
-
-
-
-//        val tileOverlayOptions2 = TileOverlayOptions()
-//        tileOverlayOptions2.tileProvider(tileProvider2)
-//        tileProvider2.showChess = true
-//        tileOverlayOptions2.visible(false)
-//        tileOverlayOptions2.transparency(0.5f)
-//        tileOverlayMap["2"] = checkNotNull(googleMap.addTileOverlay(tileOverlayOptions2))
-//        tileOverlayMap["2"]?.isVisible = false
-
-
-        for (tile in tiles) {
-//            val layerId = getLayerId(tile)
-//
-//            val tileBounds = getTileBounds(tile.x, tile.y, tile.zoom)
-//            val bitmap = loadBitmapFromAssets(tile)
-//
-//            val tileOverlayOptions = TileOverlayOptions()
-//            tileOverlayOptions.tileProvider(tileProvider)
-//            tileOverlayOptions.visible(true)
-//            val overlayOptions = GroundOverlayOptions()
-//            overlayOptions.positionFromBounds(tileBounds)
-//
-//            // TODO: can be replaced with assets path
-//            overlayOptions.image(BitmapDescriptorFactory.fromBitmap(bitmap))
-//            overlayOptions.transparency(0.4f)
-//
-//            val overlay = googleMap.addGroundOverlay(overlayOptions)
-        }
-    }
 
     private val tileProvider1 = object : MyTileProvider() {
         override fun getTile(x: Int, y: Int, z: Int): com.google.android.gms.maps.model.Tile? {

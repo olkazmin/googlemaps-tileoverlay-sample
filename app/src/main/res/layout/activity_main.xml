@@ -33,6 +33,7 @@
             android:text="Clear tile cache"
             android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
+            android:visibility="gone"
             />
 
         <Button
@@ -42,13 +43,14 @@
             android:text="Switch tile mode"
             android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
+            android:visibility="gone"
             />
 
         <Button
             android:id="@+id/button3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Show overlay"
+            android:text="Show/Hide overlay"
             android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
             />
